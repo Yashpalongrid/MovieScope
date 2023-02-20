@@ -5,6 +5,7 @@ import com.onboarding.moviescope.model.constant.Language;
 import com.onboarding.moviescope.model.constant.StreamingPlatform;
 import lombok.Data;
 
+import javax.persistence.Column;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -28,17 +29,13 @@ public class AdminAddMovieRequest {
     private int releaseYear;
 
     @NotBlank
+    @Column(unique = true)
     private String imgSource;
 
-
     private Set<Genre> genres;
-
-
     private Set<String> cast;
 
-
     private Language languages;
-
 
     private Set<StreamingPlatform> streamingPlatforms;
 }

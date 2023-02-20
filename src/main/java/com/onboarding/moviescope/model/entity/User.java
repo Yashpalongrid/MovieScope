@@ -34,7 +34,7 @@ public class User extends DataAudit {
     private String email;
 
     @NotBlank
-    @Size(max = 30)
+    @Size(max = 200)
     private String password;
 
     @OneToMany(mappedBy = "user")

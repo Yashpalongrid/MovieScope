@@ -7,6 +7,7 @@ import com.onboarding.moviescope.model.response.Response;
 import com.onboarding.moviescope.model.response.ReviewHistoryResponse;
 import com.onboarding.moviescope.service.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -19,18 +20,18 @@ public class ReviewController {
     @Autowired
     private ReviewService reviewService;
     @PutMapping("/{id}")
-    public Response<Review> editReview(@PathVariable long id, @RequestBody GiveReviewRequest giveReviewRequest){
+    public Response<Object> editReview(@PathVariable long id, @RequestBody GiveReviewRequest giveReviewRequest){
         reviewService.editReview(id,giveReviewRequest);
-        return new Response<Review>(200,"success");
+        return new Response<>(HttpStatus.OK.value(), "success",null);
     }
 
     @PutMapping("/{id}/delete")
-    public Response<Review> deleteReview(@PathVariable long id){
+    public Response<Object> deleteReview(@PathVariable long id){
     reviewService.deleteReview(id);
-        return new Response<Review>(200,"success");
+        return new Response<>(HttpStatus.OK.value(), "success",null);
     }
     @GetMapping
-    public Response<ReviewHistoryResponse> getAllReviewHistory(){
+    public Response<List<ReviewHistoryResponse>> getAllReviewHistory(){
         String userName= CustomAuthorizationFilter.userName;
         List<Review> reviewList=reviewService.getReviewHistory(userName);
         List<ReviewHistoryResponse> reviewHistoryResponseList=new ArrayList<>();
@@ -43,6 +44,6 @@ public class ReviewController {
             reviewHistoryResponse.setMovieId(review.getMovie().getId());
             reviewHistoryResponseList.add(reviewHistoryResponse);
         }
-        return new Response<ReviewHistoryResponse>(200,"success",reviewHistoryResponseList);
+        return new Response<>(HttpStatus.OK.value(), "success",reviewHistoryResponseList);
     }
 }

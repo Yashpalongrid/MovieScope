@@ -5,6 +5,8 @@ import com.onboarding.moviescope.model.entity.Review;
 import com.onboarding.moviescope.model.request.GiveReviewRequest;
 import com.onboarding.moviescope.service.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,8 +30,8 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public List<Review> getMovieReviews(long id) {
-        return reviewRepository.findByMovieId(id);
+    public Page<Review> getMovieReviews(long id, Pageable pageable) {
+          return reviewRepository.findByMovieId(id,pageable);
     }
 
     @Override

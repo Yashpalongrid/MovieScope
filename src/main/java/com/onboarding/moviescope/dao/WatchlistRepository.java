@@ -10,6 +10,6 @@ import java.util.List;
 @Repository
 public interface WatchlistRepository extends JpaRepository<Watchlist,Long> {
 
-    @Query("SELECT movie.id FROM Watchlist W WHERE W.isDeleted=0 AND W.user.id=user_id")
-    List<Long> findMovieByUserId(long user_id);
+    @Query("SELECT W FROM Watchlist W WHERE W.isDeleted=0 AND W.user.id=?1")
+    List<Watchlist> findMovieByUserId(long user_id);
 }

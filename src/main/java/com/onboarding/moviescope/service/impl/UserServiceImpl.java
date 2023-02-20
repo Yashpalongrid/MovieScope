@@ -51,11 +51,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         User user =new User();
         user.setUsername(registerRequest.getUsername());
         user.setEmail(registerRequest.getEmail());
-        user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
+       // user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
        // user.setPassword(registerRequest.getPassword());
-//        if(!(registerRequest.getPassword().equals(registerRequest.getConfirmPassword()))){
-//            user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
-//        } ///else mai exception throw kr denge
+        if(registerRequest.getPassword().equals(registerRequest.getConfirmPassword())){
+           user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
+        } ///else mai exception throw kr denge
         userRepository.save(user);
         return user;
     }

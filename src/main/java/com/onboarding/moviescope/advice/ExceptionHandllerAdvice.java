@@ -30,7 +30,7 @@ public class ExceptionHandllerAdvice {
         log.log(Level.SEVERE, e.getMessage(), e);
 
 
-        Response errorResponse = new Response(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+        Response<Object> errorResponse = new Response(HttpStatus.BAD_REQUEST.value(), e.getMessage(),null);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
 

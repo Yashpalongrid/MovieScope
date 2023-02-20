@@ -6,6 +6,8 @@ import com.onboarding.moviescope.model.request.AdminAddMovieRequest;
 import com.onboarding.moviescope.model.request.DeleteMovie;
 import com.onboarding.moviescope.service.MovieService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,9 +15,15 @@ public class MovieServiceImpl implements MovieService {
 
     @Autowired
     private MovieRepository movieRepository;
+
     @Override
     public Movie getMovieDetails(long id) {  //write logic when isdeletd is true
         return movieRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public Page<Movie> getMovies(String name, String genre, String language, int year, Pageable pageable) {
+        return movieRepository.findByFilters(name,genre,language,year,pageable);
     }
 
     @Override

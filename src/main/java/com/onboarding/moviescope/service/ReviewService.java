@@ -2,11 +2,13 @@ package com.onboarding.moviescope.service;
 
 import com.onboarding.moviescope.model.entity.Review;
 import com.onboarding.moviescope.model.request.GiveReviewRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 public interface ReviewService {
-    List<Review> getMovieReviews(long id);
+    Page<Review> getMovieReviews(long id, Pageable pageable);
 
     Review addReview(long movie_id, GiveReviewRequest giveReviewRequest,String username);
 

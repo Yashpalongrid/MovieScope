@@ -5,7 +5,6 @@ import com.onboarding.moviescope.model.constant.Genre;
 import com.onboarding.moviescope.model.constant.StreamingPlatform;
 import com.onboarding.moviescope.model.entity.Movie;
 import com.onboarding.moviescope.model.entity.Review;
-import com.onboarding.moviescope.model.entity.User;
 import com.onboarding.moviescope.model.request.GiveReviewRequest;
 import com.onboarding.moviescope.model.response.MovieIconResponse;
 import com.onboarding.moviescope.model.response.MoviePageResponse;
@@ -16,6 +15,10 @@ import com.onboarding.moviescope.service.impl.ReviewServiceImpl;
 import com.onboarding.moviescope.service.impl.UserServiceImpl;
 import com.onboarding.moviescope.utils.AppConstants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -36,8 +39,20 @@ public class MovieController {
     private UserServiceImpl userService;
 
     @GetMapping
-    public MovieIconResponse getALlMovies(@RequestParam("pageNo") int pageNo,@RequestParam("pageSize") int pageSize,@RequestParam("name") String name,@RequestParam("genre") String genre,@RequestParam("language") String language,@RequestParam("year") int year){
-        return new MovieIconResponse();
+    public Response<List<MovieIconResponse>> getALlMovies(@RequestParam("pageNo") int pageNo,@RequestParam("pageSize") int pageSize,@RequestParam("name") String name,@RequestParam("genre") String genre,@RequestParam("language") String language,@RequestParam("year") int year){
+        Pageable pageable=PageRequest.of(pageNo,pageSize);
+        Page<Movie> movies=movieService.getMovies(name,genre,language,year,pageable);
+        List<MovieIconResponse> movieIconResponseList=new ArrayList<>();
+        for(Movie movie:movies ){
+            MovieIconResponse movieIconResponse=new MovieIconResponse();
+            movieIconResponse.setMovieName(movie.getName());
+            movieIconResponse.setMovieId(movie.getId());
+            movieIconResponse.setAverageRating(movie.getAverageRating());
+            movieIconResponse.setImgSrc(movie.getImgSource());
+            movieIconResponseList.add(movieIconResponse);
+        }
+
+        return new Response<>(HttpStatus.OK.value(), "success",movieIconResponseList);
     }
 
     @GetMapping("/{id}")
@@ -56,30 +71,30 @@ public class MovieController {
         moviePageResponse.setLanguages(movie.getLanguages());
         Set<StreamingPlatform> streamingPlatforms=movie.getStreamingPlatforms();
         moviePageResponse.setStreamingPlatforms(streamingPlatforms);
-        return new Response<MoviePageResponse>(200,"success",moviePageResponse);
+        return new Response<>(HttpStatus.OK.value(), "success",moviePageResponse);
 
     }
 
     @GetMapping("/{id}/review")
-    public Response<MoviePageReviewResponse> getMovieReviews(@RequestParam(value = "pageNo",defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int pageNo, @RequestParam(value = "pageSize",defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int pageSize, @PathVariable long id){
-        List<Review> reviewList=reviewService.getMovieReviews(id);
+    public Response<List<MoviePageReviewResponse>> getMovieReviews(@RequestParam(value = "pageNo",defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int pageNo, @RequestParam(value = "pageSize",defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int pageSize, @PathVariable long id){
+        Pageable pageable= PageRequest.of(pageNo,pageSize);
+        Page<Review> reviewList=reviewService.getMovieReviews(id,pageable);
         List<MoviePageReviewResponse> moviePageReviewResponseList=new ArrayList<>();
         for( Review review : reviewList){
             MoviePageReviewResponse moviePageReviewResponse=new MoviePageReviewResponse();
             moviePageReviewResponse.setRating(review.getRating());
             moviePageReviewResponse.setFeedback(review.getFeedback());
-            User user =review.getUser();
-            moviePageReviewResponse.setUsername(user.getUsername());
+            moviePageReviewResponse.setUsername(review.getUser().getUsername());
             moviePageReviewResponseList.add(moviePageReviewResponse);
         }
-        return new Response<MoviePageReviewResponse>(200,"success",moviePageReviewResponseList);
+        return new Response<>(HttpStatus.OK.value(), "success",moviePageReviewResponseList);
     }
 
     @PostMapping("/{id}/review")
-    public Response<Review> giveMovieReview(@PathVariable long id, @RequestBody GiveReviewRequest giveReviewRequest){
+    public Response<Object> giveMovieReview(@PathVariable long id, @RequestBody GiveReviewRequest giveReviewRequest){
         String username=CustomAuthorizationFilter.userName;
         reviewService.addReview(id,giveReviewRequest,username);
-        return new Response<Review>(200,"success");
+        return new Response<Object>(HttpStatus.CREATED.value(), "success",null);
     }
 
 

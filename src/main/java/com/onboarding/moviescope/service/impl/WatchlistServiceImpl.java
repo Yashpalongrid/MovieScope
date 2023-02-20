@@ -18,6 +18,7 @@ public class WatchlistServiceImpl implements WatchlistService {
     private UserServiceImpl userService;
     @Autowired
     private MovieServiceImpl movieService;
+
     @Override
     public void addToWatchlist(AddToWatchlistRequest addToWatchlistRequest,String username) {
         Watchlist watchlist=new Watchlist();
@@ -27,8 +28,8 @@ public class WatchlistServiceImpl implements WatchlistService {
     }
 
     @Override
-    public List<Long> getUserWatchlistedMovies() {
-        List<Long> watchlistMovies=watchlistRepository.findMovieByUserId(4L);
+    public List<Watchlist> getUserWatchlistedMovies(String username) {
+        List<Watchlist> watchlistMovies=watchlistRepository.findMovieByUserId(userService.getUser(username).getId());
         return watchlistMovies;
     }
 }

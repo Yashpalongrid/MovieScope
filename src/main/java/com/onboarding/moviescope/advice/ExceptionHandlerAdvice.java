@@ -13,19 +13,13 @@ import java.util.logging.Level;
 
 @RestControllerAdvice
 @Log
-public class ExceptionHandllerAdvice {
+public class ExceptionHandlerAdvice {
     @ExceptionHandler(value = {IllegalArgumentException.class})
 
 
     public @ResponseBody ResponseEntity<Response> badRequestErrorHandler(HttpServletRequest req, Exception e) throws Exception {
 
-        // If the exception is annotated with @ResponseStatus rethrow it and let
 
-        // the framework handle it - like the OrderNotFoundException example
-
-        // at the start of this post.
-
-        // AnnotationUtils is a Spring Framework utility class.
 
         log.log(Level.SEVERE, e.getMessage(), e);
 

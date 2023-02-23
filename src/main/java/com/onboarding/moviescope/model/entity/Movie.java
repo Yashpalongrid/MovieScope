@@ -34,7 +34,7 @@ public class Movie extends DataAudit {
     private String storyline;
 
     @Digits(integer = 10,fraction = 1)
-    private float averageRating;
+    private float rating;
 
     @Digits(integer = 1000,fraction = 0)
     private int releaseYear;
@@ -53,7 +53,7 @@ public class Movie extends DataAudit {
     private Set<String> cast;
 
     @Enumerated(EnumType.STRING)
-    private Language languages;
+    private Language language;
 
     @ElementCollection(targetClass = StreamingPlatform.class)
     @JoinTable(name = "Movie_Streaming",joinColumns = @JoinColumn(name = "id"))

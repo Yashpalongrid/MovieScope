@@ -12,7 +12,7 @@ import javax.validation.constraints.Size;
 import java.util.Set;
 
 @Data
-public class AdminAddMovieRequest {
+public class AdminAddOrEditMovieRequest {
 
     @NotBlank
     @Size(max = 30)
@@ -23,7 +23,7 @@ public class AdminAddMovieRequest {
     private String storyline;
 
     @Digits(integer = 10,fraction = 1)
-    private float averageRating;
+    private float rating;
 
     @Digits(integer = 1000,fraction = 0)
     private int releaseYear;
@@ -35,7 +35,7 @@ public class AdminAddMovieRequest {
     private Set<Genre> genres;
     private Set<String> cast;
 
-    private Language languages;
+    private Language language;
 
     private Set<StreamingPlatform> streamingPlatforms;
 }

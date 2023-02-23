@@ -1,13 +1,12 @@
 package com.onboarding.moviescope.service;
 
 
-import com.onboarding.moviescope.model.entity.Watchlist;
-import com.onboarding.moviescope.model.request.AddToWatchlistRequest;
+import com.onboarding.moviescope.model.response.WatchlistResponse;
 
 import java.util.List;
 
 public interface WatchlistService {
 
-    void addToWatchlist(AddToWatchlistRequest addToWatchlistRequest,String username);
-    List<Watchlist> getUserWatchlistedMovies(String username);
+
+    List<WatchlistResponse> getUserWatchlistedMovies(String username);
 }

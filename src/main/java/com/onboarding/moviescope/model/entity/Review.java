@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Data
@@ -20,10 +22,12 @@ public class Review extends DataAudit {
     private long id;
 
 
+    @NotNull
     private float rating;
 
 
     @Size(max = 300)
+    @NotBlank
     private String feedback;
 
     @ManyToOne(fetch = FetchType.LAZY)

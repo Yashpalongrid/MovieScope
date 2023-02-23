@@ -6,7 +6,9 @@ import com.onboarding.moviescope.model.request.RegisterRequest;
 public interface UserService {
 
     User registerUser(RegisterRequest registerRequest);
-//    User saveUser(User user);
-    public User findUser(long id);
+
     public User getUser(String username);
 }
+
+//    User saveUser(User user);
+//    public User findUser(long id);

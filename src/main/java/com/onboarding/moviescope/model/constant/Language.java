@@ -4,5 +4,5 @@ public enum Language {
     English,
     Hindi,
     Tamil,
-    Telgue;
+    Telugu;
 }

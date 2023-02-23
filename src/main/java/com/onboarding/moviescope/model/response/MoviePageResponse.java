@@ -12,7 +12,7 @@ public class MoviePageResponse {
 
     private String name;
     private String storyline;
-    private float averageRating;
+    private float rating;
     private int releaseYear;
     private String imgSource;
     private Set<Genre> genres;

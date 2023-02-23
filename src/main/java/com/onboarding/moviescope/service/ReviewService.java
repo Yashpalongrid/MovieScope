@@ -1,21 +1,22 @@
 package com.onboarding.moviescope.service;
 
 import com.onboarding.moviescope.model.entity.Review;
-import com.onboarding.moviescope.model.request.GiveReviewRequest;
-import org.springframework.data.domain.Page;
+import com.onboarding.moviescope.model.request.GiveOrEditReviewRequest;
+import com.onboarding.moviescope.model.response.MoviePageReviewResponse;
+import com.onboarding.moviescope.model.response.ReviewHistoryResponse;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 public interface ReviewService {
-    Page<Review> getMovieReviews(long id, Pageable pageable);
+    List<MoviePageReviewResponse> getMovieReviews(long id, Pageable pageable);
 
-    Review addReview(long movie_id, GiveReviewRequest giveReviewRequest,String username);
+    Review addReview(long movie_id, GiveOrEditReviewRequest giveOrEditReviewRequest, String username);
 
-    void editReview(long id,GiveReviewRequest giveReviewRequest);
+    void editReview(long id, GiveOrEditReviewRequest giveOrEditReviewRequest);
 
     void deleteReview(long id);
 
-    List<Review> getReviewHistory(String username);
+    List<ReviewHistoryResponse> getReviewHistory(String username,Pageable pageable);
 
 }

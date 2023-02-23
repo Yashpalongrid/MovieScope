@@ -7,5 +7,5 @@ public class MovieIconResponse {
     private long movieId;
     private String movieName;
     private String imgSrc;
-    private float averageRating;
+    private float rating;
 }

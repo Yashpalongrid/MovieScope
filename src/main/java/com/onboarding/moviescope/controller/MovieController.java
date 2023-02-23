@@ -1,113 +1,87 @@
 package com.onboarding.moviescope.controller;
 
-import com.onboarding.moviescope.filter.CustomAuthorizationFilter;
 import com.onboarding.moviescope.model.constant.Genre;
-import com.onboarding.moviescope.model.constant.StreamingPlatform;
-import com.onboarding.moviescope.model.entity.Movie;
-import com.onboarding.moviescope.model.entity.Review;
-import com.onboarding.moviescope.model.request.GiveReviewRequest;
+import com.onboarding.moviescope.model.constant.Language;
+import com.onboarding.moviescope.model.request.GiveOrEditReviewRequest;
 import com.onboarding.moviescope.model.response.MovieIconResponse;
 import com.onboarding.moviescope.model.response.MoviePageResponse;
 import com.onboarding.moviescope.model.response.MoviePageReviewResponse;
 import com.onboarding.moviescope.model.response.Response;
-import com.onboarding.moviescope.service.impl.MovieServiceImpl;
-import com.onboarding.moviescope.service.impl.ReviewServiceImpl;
-import com.onboarding.moviescope.service.impl.UserServiceImpl;
+import com.onboarding.moviescope.service.MovieService;
+import com.onboarding.moviescope.service.ReviewService;
+import com.onboarding.moviescope.service.UserService;
 import com.onboarding.moviescope.utils.AppConstants;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
+import javax.validation.Valid;
+import java.security.Principal;
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/movie")
+@Slf4j
 public class MovieController {
 
     @Autowired
-    private MovieServiceImpl movieService;
+    private MovieService movieService;
 
     @Autowired
-    private ReviewServiceImpl reviewService;
+    private ReviewService reviewService;
 
     @Autowired
-    private UserServiceImpl userService;
+    private UserService userService;
+
 
     @GetMapping
-    public Response<List<MovieIconResponse>> getALlMovies(@RequestParam("pageNo") int pageNo,@RequestParam("pageSize") int pageSize,@RequestParam("name") String name,@RequestParam("genre") String genre,@RequestParam("language") String language,@RequestParam("year") int year){
+    public Response<List<MovieIconResponse>> getALlMovies(@RequestParam(value = "name",required = false) String name,
+                                                          @RequestParam(value = "genre",required = false) Genre genre,
+                                                          @RequestParam(value = "language",required = false) Language language,
+                                                          @RequestParam(value="releaseYear",required=false,defaultValue = "0") int releaseYear,
+                                                          @RequestParam(value = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int pageNo,
+                                                          @RequestParam(value = "pageSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int pageSize
+                                                          ){
         Pageable pageable=PageRequest.of(pageNo,pageSize);
-        Page<Movie> movies=movieService.getMovies(name,genre,language,year,pageable);
-        List<MovieIconResponse> movieIconResponseList=new ArrayList<>();
-        for(Movie movie:movies ){
-            MovieIconResponse movieIconResponse=new MovieIconResponse();
-            movieIconResponse.setMovieName(movie.getName());
-            movieIconResponse.setMovieId(movie.getId());
-            movieIconResponse.setAverageRating(movie.getAverageRating());
-            movieIconResponse.setImgSrc(movie.getImgSource());
-            movieIconResponseList.add(movieIconResponse);
-        }
 
-        return new Response<>(HttpStatus.OK.value(), "success",movieIconResponseList);
+        List<MovieIconResponse> movieIconResponseList=movieService.getMovies(name,genre,language,releaseYear,false,pageable);
+
+        return new Response<>(HttpStatus.OK.value(), AppConstants.SUCCESS_MESSAGE,movieIconResponseList);
     }
 
     @GetMapping("/{id}")
     public Response<MoviePageResponse> getMovie(@PathVariable long id){
-        Movie movie=movieService.getMovieDetails(id);
-        MoviePageResponse moviePageResponse=new MoviePageResponse();
-        moviePageResponse.setName(movie.getName());
-        moviePageResponse.setStoryline(movie.getStoryline());
-        moviePageResponse.setAverageRating(movie.getAverageRating());
-        moviePageResponse.setReleaseYear(movie.getReleaseYear());
-        moviePageResponse.setImgSource(movie.getImgSource());
-        Set<Genre> genres=movie.getGenres();
-        moviePageResponse.setGenres(genres);
-        Set<String> cast=movie.getCast();
-        moviePageResponse.setCast(cast);
-        moviePageResponse.setLanguages(movie.getLanguages());
-        Set<StreamingPlatform> streamingPlatforms=movie.getStreamingPlatforms();
-        moviePageResponse.setStreamingPlatforms(streamingPlatforms);
-        return new Response<>(HttpStatus.OK.value(), "success",moviePageResponse);
+        MoviePageResponse moviePageResponse=movieService.getMovieDetails(id);
+
+        return new Response<>(HttpStatus.OK.value(), AppConstants.SUCCESS_MESSAGE,moviePageResponse);
 
     }
 
     @GetMapping("/{id}/review")
-    public Response<List<MoviePageReviewResponse>> getMovieReviews(@RequestParam(value = "pageNo",defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int pageNo, @RequestParam(value = "pageSize",defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int pageSize, @PathVariable long id){
+    public Response<List<MoviePageReviewResponse>> getMovieReviews(@RequestParam(value = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int pageNo, @RequestParam(value = "pageSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int pageSize,
+                                                                   @PathVariable long id){
         Pageable pageable= PageRequest.of(pageNo,pageSize);
-        Page<Review> reviewList=reviewService.getMovieReviews(id,pageable);
-        List<MoviePageReviewResponse> moviePageReviewResponseList=new ArrayList<>();
-        for( Review review : reviewList){
-            MoviePageReviewResponse moviePageReviewResponse=new MoviePageReviewResponse();
-            moviePageReviewResponse.setRating(review.getRating());
-            moviePageReviewResponse.setFeedback(review.getFeedback());
-            moviePageReviewResponse.setUsername(review.getUser().getUsername());
-            moviePageReviewResponseList.add(moviePageReviewResponse);
-        }
-        return new Response<>(HttpStatus.OK.value(), "success",moviePageReviewResponseList);
+        List<MoviePageReviewResponse> moviePageReviewResponseList=reviewService.getMovieReviews(id,pageable);
+        return new Response<>(HttpStatus.OK.value(), AppConstants.SUCCESS_MESSAGE,moviePageReviewResponseList);
     }
 
     @PostMapping("/{id}/review")
-    public Response<Object> giveMovieReview(@PathVariable long id, @RequestBody GiveReviewRequest giveReviewRequest){
-        String username=CustomAuthorizationFilter.userName;
-        reviewService.addReview(id,giveReviewRequest,username);
-        return new Response<Object>(HttpStatus.CREATED.value(), "success",null);
+    public Response<Object> giveMovieReview(@PathVariable long id, @Valid @RequestBody GiveOrEditReviewRequest giveOrEditReviewRequest, Principal principal){
+        String username= principal.getName();
+        reviewService.addReview(id, giveOrEditReviewRequest,username);
+        return new Response<Object>(HttpStatus.CREATED.value(), AppConstants.SUCCESS_MESSAGE,null);
+    }
+
+    @PostMapping("/{id}/watchlist")
+    public Response<Object> addToWatchlist( @PathVariable long id, Principal principal){
+        String username= principal.getName();
+        log.info("username: {}",username);
+        movieService.addToWatchlist(username,id);
+        return new Response<Object>(HttpStatus.OK.value(), AppConstants.SUCCESS_MESSAGE,null);
     }
 
 
-
-
-
-//    @GetMapping
-//    public BaseResponseObject homePage(){
-//        List<MovieResponseObject> responseObjectList=new ArrayList<>();
-//        Map<String,Object> map=new HashMap<>();
-//        map.put("movies",responseObjectList);
-//        BaseResponseObject baseResponseObject=new BaseResponseObject(200,"success",map);
-//        return baseResponseObject;
-//
-//    }
 }

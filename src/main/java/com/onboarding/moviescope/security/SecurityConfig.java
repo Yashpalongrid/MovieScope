@@ -39,14 +39,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers("/user/login/**").permitAll();  //we can do this for home page,login.register
         http.authorizeRequests().antMatchers("/user").permitAll();
         http.authorizeRequests().antMatchers("/movie").permitAll();
+        http.authorizeRequests().antMatchers("/movie/{id}").permitAll();
         http.authorizeRequests().antMatchers(HttpMethod.GET,"/user/**").hasAnyAuthority("READ_AUTHORITY");
         http.authorizeRequests().antMatchers(HttpMethod.POST,"/user/**").hasAnyAuthority("WRITE_PRIVILEGE");
         http.authorizeRequests().antMatchers(HttpMethod.GET,"/movie/**").hasAnyAuthority("READ_AUTHORITY");
         http.authorizeRequests().antMatchers(HttpMethod.POST,"/admin/movie/**").hasAnyAuthority("WRITE_PRIVILEGE");
         http.authorizeRequests().antMatchers(HttpMethod.GET,"/review/**").hasAnyAuthority("READ_AUTHORITY");
         http.authorizeRequests().antMatchers(HttpMethod.POST,"/review/**").hasAnyAuthority("WRITE_PRIVILEGE");
-        http.authorizeRequests().antMatchers(HttpMethod.GET,"/watchlist/**").hasAnyAuthority("READ_AUTHORITY");
-        http.authorizeRequests().antMatchers(HttpMethod.POST,"/watchlist/**").hasAnyAuthority("WRITE_PRIVILEGE");
+
 
         http.authorizeRequests().anyRequest().authenticated();
         http.addFilter(customAuthenticationFilter);
